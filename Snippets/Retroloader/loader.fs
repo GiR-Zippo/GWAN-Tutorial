@@ -11,23 +11,16 @@ uniform float time;
 uniform vec2 resolution;
 uniform float ready;
 
+//For the Bars
 vec2 position;
+vec3 bars;
+float barsize = 0.05;
+float barsangle = 1.4;
+
+//For the Beer
 vec3 color;
 
-float barsize = 0.04;
-float barsangle = 1.2;
-
-vec3 mixcol(float value, float r, float g, float b)
-{
-        return vec3(value * r, value * g, value * b);
-}
-
-void bar(float pos, float r, float g, float b)
-{
-         if ((position.y <= pos + barsize) && (position.y >= pos - barsize*2.0))
-                color = mixcol(1.0 - abs(pos - position.y) / barsize, r, g, b);
-}
-
+//Starfield
 float rand (in vec2 uv) { return fract(sin(dot(uv,vec2(12.4124,48.4124)))*48512.41241); }
 const vec2 O = vec2(0.,1.);
 float noise (in vec2 uv) {
@@ -128,8 +121,37 @@ float Sprite3x5(float sprite,vec2 p){
     return getBit(sprite,(2.0 - p.x) + 3.0 * p.y) * bounds;
 }
 
+//The Rasterbars
+vec3 mixcol(float value, float r, float g, float b)
+{
+        return vec3(value * r, value * g, value * b);
+}
+
+void bar(float pos, float r, float g, float b)
+{
+         if ((position.y <= pos + barsize) && (position.y >= pos - barsize))
+                bars = mixcol(1.0 - abs(pos - position.y) / barsize, r, g, b);
+}
+
 void main( void ) {
 
+        //The bars
+        {
+            position = ( gl_FragCoord.xy / resolution.xy );
+            position = position * vec2(2.0) - vec2(0.3);    
+        
+            bars = vec3(0., 0., 0.);
+            float t = mod(time * 0.1, 10.) + time;
+
+            bar(-0.5+abs(sin(t*2.)),                  1.0, 0.0, 0.0);
+            bar(-0.5+abs(sin(t*2.+barsangle/6.)),     1.0, 1.0, 0.0);
+            bar(-0.5+abs(sin(t*2.+barsangle/6.*2.)),  1.0, 1.0, 1.0);
+            bar(-0.5+abs(sin(t*2.+barsangle/6.*3.)),  0.0, 0.0, 1.0);
+            bar(-0.5+abs(sin(t*2.+barsangle/6.*4.)),  0.0, 1.0, 1.0);
+            bar(-0.5+abs(sin(t*2.+barsangle/6.*5.)),  1.0, 0.0, 1.0);
+        }
+        
+        //Some Stars
         vec2 uv = ( gl_FragCoord.xy / resolution.xy )*SIZE;
         
         float stars = 0.;
@@ -140,6 +162,8 @@ void main( void ) {
                 s = (200.-fl*30.);
                 stars += step(.1,pow(noise(mod(vec2(uv.x*s + time*SPEED*DIRECTION - fl*100.,uv.y*s),resolution.x)),18.)) * (fl/float(LAYERS));
         }
+        
+        //The Text
         vec2 _P_ = ( gl_FragCoord.xy / resolution.xy );
         vec2 q = _P_ - vec2(0.3,0.7);
         vec2 p = ( gl_FragCoord.xy /resolution.xy ) *SIZE * vec2(32,32);
@@ -161,20 +185,7 @@ void main( void ) {
             slashN
         }
         
-        position = ( gl_FragCoord.xy / resolution.xy );
-        position = position * vec2(2.0) - vec2(1.0);    
-        
-        
-        color = vec3(0., 0., 0.);
-        float t = mod(time * 0.1, 10.) + time;
-        
-        bar(-0.1+sin(t*2.)/4.0,                   1.0, 0.0, 0.0);
-        bar(-0.1+sin(t*2.+barsangle/1.*1.)/4.0,           1.0, 1.0, 0.0);
-        bar(-0.1+sin(t*2.+barsangle/1.*2.)/4.0,  1.0, 1.0, 1.0);
-        bar(-0.1+sin(t*2.+barsangle/1.*3.)/4.0,  0.0, 0.0, 1.0);
-        bar(-0.1+sin(t*2.+barsangle/1.*4.)/4.0,  0.0, 1.0, 1.0);
-        bar(-0.1+sin(t*2.+barsangle/1.*5.)/4.0,  1.0, 0.0, 1.0);
-        
-        color += vec3(stars)+(c);
+        //Mixing it all together
+        color = vec3(stars)+(c)+(bars);
         gl_FragColor = vec4( color, 1.0 );
 }
