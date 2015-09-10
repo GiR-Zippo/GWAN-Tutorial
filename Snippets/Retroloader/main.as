@@ -80,7 +80,7 @@ class Master : IController
                 _delay++;
             else*/
             {
-                launcher.LoadScript("WOWMain");
+                launcher.LoadScript("Hauptseite");
                 self.StopSound(_introSound);
                 self.UnloadSound(_introSound);
             }
@@ -89,15 +89,7 @@ class Master : IController
         uint32 _delay;
         bool _complete;
         uint16 _fileId, _prevFileID, _ObjFileText, _introSound;
-        array<string> files = { "Slider.as", "DownloadBar.as",
-                                "test.flac",
-                                "partikel.fs", "partikel.vs",
-                                "Body.png", "pt.ms3d", "w2.png", "wotlkslider_bot.png",
-                                "BOOTERFF.ttf", "DLBarFill.png", "script.as", "w3.png", "wotlkslider_header.png",
-                                "ButtonB.png", "Hair00_04.png", "w5.png", "WOWMain.as",
-                                "ButtonR.png", "main.as", "wotlk.as",
-                                "CATAEmblem.png", "MainBG.png", "the_king_and_queen_font.ttf", "WOTLKEmblem.png",
-                                "click.mp3", "opening.png", "w1.png", "WotlkMenuBck.png"};
+        array<string> files = { "Hauptseite.as"};
         float ticker;
         uint16 obj, shader, ObjText;
         CScript @self;
